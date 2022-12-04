@@ -1,0 +1,150 @@
+create database AnimalRescue;
+use AnimalRescue;
+
+CREATE TABLE Donor (
+ lname varchar(20) not null,
+ phone char(10),
+ Address varchar(20),
+ primary key(lname)
+);
+
+CREATE TABLE Organizations (
+ orgID int auto_increment primary key,
+ type varchar(20),
+ name varchar(20),
+ address varchar(20),
+ phone char(10)
+);
+
+CREATE TABLE RescueOrg(
+ orgID int not null,
+ primary key(orgID),
+ foreign key(orgID) references Organizations(orgID)
+);
+
+CREATE TABLE SPCABranch(
+ orgID int not null,
+ primary key(orgID),
+foreign key(orgID) references Organizations(orgID)
+);
+
+CREATE TABLE Shelter(
+ orgID int not null,
+ website varchar(50),
+ dogConstraint integer,
+ catConstraint integer,
+ rabbitConstraint integer,
+ rodentConstraint integer,
+ primary key(orgID),
+foreign key(orgID) references Organizations(orgID)
+);
+
+CREATE TABLE Donation(
+ donor varchar(20) not null,
+ recipient int not null,
+ amount integer not null,
+ date date,
+ primary key(donor, recipient, date),
+ foreign key(donor) references Donor(lname),
+ foreign key(recipient) references Organizations(orgID)
+);
+
+CREATE TABLE Employee(
+ fname varchar(20) not null,
+ lname varchar(20) not null,
+ employer int not null,
+ address varchar(20),
+ phone char(10),
+ isOwner boolean,
+ primary key(lname,employer),
+ foreign key (employer) references Organizations(orgID)
+);
+
+CREATE TABLE Adopter(
+ lname varchar(20) not null,
+ phone char(10),
+ address varchar(20),
+ primary key(lname)
+);
+
+CREATE TABLE Driver(
+fname varchar(20),
+ lname varchar(20) not null,
+ emergPhone char(10),
+ licensePl varchar(10),
+ driveLic char(10) not null,
+ rescueOrg int not null,
+ primary key(lname),
+ foreign key(rescueOrg) references RescueOrg(orgID)
+);
+
+CREATE TABLE Animal(
+ animalID int auto_increment primary key,
+ type varchar(20) not null,
+ SPCABranch int not null,
+ arrival date not null,
+ depart date,
+ shelter int,
+ rescued boolean,
+adopter varchar(20),
+adptAmnt integer,
+ foreign key(shelter) references Shelter(orgID),
+foreign key(SPCABranch) references SPCABranch(orgID),
+ foreign key(adopter) references Adopter(lname)
+);
+
+CREATE TABLE Rescue(
+ animalID int not null,
+ RescueOrgID int not null,
+ amountPaid integer,
+ driverName varchar(20) not null,
+ primary key(animalID),
+ foreign key(animalID) references Animal(animalID) on delete cascade,
+ foreign key(driverName) references Driver(lname),
+ foreign key(RescueOrgID) references RescueOrg(orgID)
+);
+
+CREATE TABLE VetVisit(
+ animalID int not null,
+ vetName varchar(20) not null,
+ curCondit varchar(20),
+ weight integer,
+ date date not null,
+ primary key(animalID, vetName, date),
+ foreign key(animalID) references Animal(animalID)
+);
+
+
+INSERT INTO Donor (lname,phone,Address) VALUES ('Bettio', '7774747474','1 Alfred Street'),('MacIntyre', '7774383898','122 Uni Avenue'),('Woolfe', '2389012375','100 Union Street'),('Dean', '1234567890','299 Johnson Street'),('Smith', '4567894337','1000 Bay Street'),('Anonymous',null,null);
+
+INSERT INTO Organizations(type,name,address,phone) VALUES ('SPCA','Kingston HS','1 Princess Street','2323232323'),('SPCA','Frontenac HS','10 Bath Road','9898989898'),('SPCA','Napanee HS','12 Napanee Road','4567822179'),('Shelter','Kingston AS','89 Princess Street','8889230091'),('Shelter','Frontenac AS','30 Bath Road','3988909876'),('Shelter','Napanee AS','60 Napanee Road','3988909400'),('Rescue','Kingston AR','71 Princess Road','3988929400'),('Rescue','Frontenac AR','71 Bath Road','3981929400'),('Rescue','Napanee AR','71 Napanee Road','3928929400');
+
+INSERT INTO RescueOrg(orgID) VALUES (7),(8),(9);
+
+INSERT INTO SPCABranch(orgID) VALUES (1),(2),(3);
+
+INSERT INTO Shelter(orgID,website,dogConstraint, catConstraint, rabbitConstraint, rodentConstraint) VALUES (4,'www.kingstonanimalshelter.ca',50,25,15,500),(5,'www.frontenacanimalshelter.ca',100,70,200,5000),(6,'www.napaneeanimalshelter.ca',30,45,60,83);
+
+INSERT INTO Donation(donor, recipient, amount, date) VALUES ('Smith',1,100000,'2018-01-01'),('Smith',8,10500,'2018-03-01'),('Bettio',8,50000000,'2018-08-10'),('Woolfe',3,1000000,'2018-10-01'),('MacIntyre',1,5,'2018-01-02'),('Anonymous',6,25,'2018-04-04'),('Anonymous',5,250,'2018-04-04'),('Anonymous',7,180,'2018-04-04');
+
+INSERT INTO Animal(type, SPCABranch, arrival,depart,shelter,rescued,adopter,adptAmnt) VALUES ('dog',1,'2010-01-12','2018-01-12', 5,TRUE,null, null),('cat',1,'2010-01-12','2018-01-12', 5,TRUE,null, null),('rabbit',1,'2010-01-12','2018-01-12', 5,TRUE,null, null);
+
+INSERT INTO Animal(type, SPCABranch, arrival,depart,shelter,rescued,adopter,adptAmnt) VALUES ('dog',1,'2010-01-12',null, null,FALSE,null, null),('cat',1,'2010-01-12',null, null,FALSE,null, null),('cat',1,'2010-01-12',null, null,FALSE,null, null),('cat',1,'2010-01-12',null, null,FALSE,null, null),('dog',1,'2010-01-12',null, null,FALSE,null, null),('dog',1,'2010-01-12',null, null,FALSE,null, null),('dog',1,'2010-01-12',null, null,FALSE,null, null),('dog',1,'2010-01-12',null, null,FALSE,null, null),('rabbit',1,'2010-01-12',null, null,FALSE,null, null),('rodent',1,'2010-01-12',null, null,FALSE,null, null),('cat',1,'2010-01-12',null, null,FALSE,null, null),('rabbit',1,'2010-01-12',null, null,FALSE,null, null),('rabbit',1,'2010-01-12',null, null,FALSE,null, null),('dog',1,'2010-01-12','2018-01-12', 4,FALSE,null, null),('cat',1,'2010-01-12','2018-01-12', 4,FALSE,null, null),('dog',1,'2010-01-12','2018-01-12', 4,FALSE,null, null);
+
+INSERT INTO Animal(type, SPCABranch, arrival,depart,shelter,rescued,adopter,adptAmnt) VALUES ('dog',2,'2010-01-12',null, null,FALSE,null, null),('cat',2,'2010-01-12',null, null,FALSE,null, null),('cat',2,'2010-01-12',null, null,FALSE,null, null),('cat',2,'2010-01-12',null, null,FALSE,null, null),('dog',2,'2010-01-12',null, null,FALSE,null, null),('dog',2,'2010-01-12',null, null,FALSE,null, null),('dog',2,'2010-01-12',null, null,FALSE,null, null),('dog',2,'2010-01-12',null, null,FALSE,null, null),('rabbit',2,'2010-01-12',null, null,FALSE,null, null),('rodent',2,'2010-01-12',null, null,FALSE,null, null),('cat',2,'2010-01-12',null, null,FALSE,null, null),('rabbit',2,'2010-01-12',null, null,FALSE,null, null),('rabbit',2,'2010-01-12',null, null,FALSE,null, null);
+
+INSERT INTO Animal(type, SPCABranch, arrival,depart,shelter,rescued,adopter,adptAmnt) VALUES ('dog',3,'2010-01-12',null, null,FALSE,null, null),('cat',3,'2010-01-12',null, null,FALSE,null, null),('cat',3,'2010-01-12',null, null,FALSE,null, null),('cat',3,'2010-01-12',null, null,FALSE,null, null),('dog',3,'2010-01-12',null, null,FALSE,null, null),('dog',3,'2010-01-12',null, null,FALSE,null, null),('dog',3,'2010-01-12',null, null,FALSE,null, null),('dog',3,'2010-01-12',null, null,FALSE,null, null),('rabbit',3,'2010-01-12',null, null,FALSE,null, null),('rodent',3,'2010-01-12',null, null,FALSE,null, null),('cat',3,'2010-01-12',null, null,FALSE,null, null),('rabbit',3,'2010-01-12',null, null,FALSE,null, null),('rabbit',3,'2010-01-12',null, null,FALSE,null, null);
+
+INSERT INTO Donation (donor, recipient, amount, date) VALUES ('Dean', 2, 2000, '2020-02-04');
+
+INSERT INTO Employee(fname, lname, employer, address, phone, isOwner) VALUES ('Matthew', 'Filipovich', 2, '7 Birchview', '6479934929', FALSE), ('Sarah', 'DeLazzari', 2, '7 Lukow', '6479857689', FALSE), ('Dawson', 'Cox', 2, '10 Road', '6478498495', FALSE), ('Marco', 'Moro', 2, '98 Glenlake', '6470379495', FALSE), ('Karen', 'Thurnau', 2, '7 Daker', '6477449087', FALSE), ('Jillian', 'Shaver', 2, '35 Jackson', '6479587394', FALSE), ('Nick', 'Bobo', 2, '7 Johns', '6478573985', FALSE);
+
+INSERT INTO Adopter(lname, phone, address) VALUES ('MacMillan', '6475869482', '4 Grenadier'),('Chisolm', '6478459490', '78 Wind Street'), ('Kenny', '6473210925', '19 Dovercourt Ave');
+
+INSERT INTO Driver(fname, lname, emergPhone, licensePl, driveLic, rescueOrg) VALUES ('Meg', 'MacMillan','6478503930', '4897493074', '9947573029', 8),('Maeve', 'Buchan','6478408405', '8465829374', '9475630274', 9), ('Gabe', 'Buchanan','6478495768', '9485629375', '8573648566', 7), ('Kestrel', 'DeMarco','6478475965', '9478475960', '8367486745', 8) , ('Claire', 'Lintern','6478479604', '8576930859', '4657684757', 9);
+
+INSERT INTO VetVisit(animalID, vetName, curCondit, weight, date) VALUES (12,'Dawes','Ringworm',24,'2012-02-03'),(20,'Dawes','Tick Bite',50,'2012-02-04'),(23,'Dawes','Upset Stomach',11,'2012-02-05'),(17,'Stevenson','Vaccination',100,'2012-04-12'),(2,'Stevenson','Vaccination',5,'2012-02-04'),(21,'Stevenson','ACL Surgery',240,'2012-02-05');
+
+INSERT INTO Animal(type, SPCABranch, arrival,depart,shelter,rescued,adopter,adptAmnt) VALUES ('dog',1, '2012-01-12','2012-01-13', 5, TRUE ,null, null),('cat',2, '2013-01-12','2014-01-13', 6, TRUE ,null, null),('rodent',1, '2009-01-12','2010-01-13', 5, TRUE ,null, null),('rabbit',1, '2012-04-12','2012-09-13', 5, TRUE ,null, null),('dog',2, '2008-01-12','2012-09-21', 6, TRUE ,null, null),('cat',1, '2011-01-12','2014-06-19', 6, TRUE ,'MacMillan', 30),('rodent',3, '2009-05-30','2010-11-12', 4, TRUE ,'Chisolm', 5),('rabbit',2, '2007-04-12','2015-09-13', 6, TRUE ,'Kenny', 26);
+
+INSERT INTO Rescue(animalID, RescueOrgID, amountPaid, driverName) VALUES (1,9,10,'Lintern'),(2,9,7,'Lintern'),(3,9,48,'Lintern'),(42,8,15,'DeMarco'),(43,8,20,'DeMarco'),(44,8,5,'DeMarco'),(45,7,40,'Buchanan'),(46,7,45,'Buchanan'),(47,7,8,'Buchanan'),(48,9,12,'Lintern');
